@@ -19,8 +19,36 @@
         }
     </style>
 </head>
-<body class="bg-secondary-subtle">
+<body class="">
 <div class="container-md bg-white min-vh-100 ">
+<!--    navbar-->
+    <nav class="navbar border-bottom border-1 navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">PACHELO</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                    aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                 aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">PACHELO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Link</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+<!--    navbar end-->
     <div class="row pt-5 pb-3">
         <div class="col text-center">
             <h1 class="fw-bold ">PACHELO SCAN</h1>
@@ -28,20 +56,19 @@
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-6">
-            <form action="/predict" method="post" enctype="multipart/form-data"
+        <div class="col-md-8 px-5 px-md-0">
+            <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data"
                   class="d-flex justify-content-center flex-column ">
                 <div class="drop-area rounded-2 p-4 mb-2 bg-secondary-subtle" id="drop-area">
                     <i class="bi bi-file-earmark-text h1"></i>
-                    <p class="pt-3 ">Seret dan jatuhkan file di sini atau klik untuk memilih file <br>
+                    <p class="pt-3 text-secondary">Seret dan jatuhkan file di sini atau klik untuk memilih file <br>
                         Maximum file size 10MB
                     </p>
-                    <!--                    <label for="fileElem" class="btn btn-primary">Pilih File</label>-->
-                    <input type="file" name="file" id="fileElem" accept=".csv" style="display:none;">
+                    <input type="file" name="file" id="fileElem" accept=".log" style="display:none;" required>
                 </div>
                 <div class="d-flex row-cols-2 gap-2 px-5 justify-content-center">
                     <button type="reset" class="btn btn-outline-secondary ms-2 ">Cancel</button>
-                    <button type="submit" class="btn btn-success ms-2">Prediksi</button>
+                    <button type="submit" class="btn btn-primary ms-2">Prediksi</button>
                 </div>
             </form>
         </div>
@@ -54,15 +81,13 @@
 <script>
     const dropArea = document.getElementById('drop-area');
     const fileElem = document.getElementById('fileElem');
-    const form = document.querySelector('form');
+    const form = document .getElementById('uploadForm');
 
-    // Mencegah perilaku default
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
         document.body.addEventListener(eventName, preventDefaults, false);
     });
 
-    // Menambahkan dan menghapus kelas hover
     ['dragenter', 'dragover'].forEach(eventName => {
         dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
     });
@@ -71,7 +96,6 @@
         dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
     });
 
-    // Menangani file yang dijatuhkan
     dropArea.addEventListener('drop', handleDrop, false);
     dropArea.addEventListener('click', () => fileElem.click());
 
@@ -93,17 +117,26 @@
 
     function handleFiles(files) {
         if (files.length > 0) {
-            // Menampilkan nama file yang dipilih
             const fileName = files[0].name;
             dropArea.querySelector('p').textContent = `File yang dipilih: ${fileName}`;
         }
     }
 
-    // Reset file input dan area drop saat form di-reset
+    form.addEventListener('submit', (e) => {
+        const files = fileElem.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.size > 10 * 1024 * 1024) { // 10 MB
+                e.preventDefault();
+                alert('File harus berukuran tidak boleh lebih dari 10 MB.');
+            }
+        }
+    });
+
     form.addEventListener('reset', () => {
-        fileElem.value = '';  // Reset input file
+        fileElem.value = '';
         dropArea.querySelector('p').innerHTML = "Seret dan jatuhkan file di sini atau klik untuk memilih file <br>\n" +
-            "                        Maximum file size 10MB"
+            "                        Maximum file size 10MB";
     });
 </script>
 
