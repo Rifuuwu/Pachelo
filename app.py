@@ -37,10 +37,10 @@ def upload_file():
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
-        return "No file uploaded", 400
+        return render_template('notfound.html')
     file = request.files['file']
     if file.filename == '':
-        return "No file selected", 400
+        return render_template('notfound.html')
 
     filepath = './uploads/' + file.filename
     os.makedirs('./uploads', exist_ok=True)
