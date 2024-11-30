@@ -7,45 +7,233 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=UnifrakturMaguntia&display=swap"
+          rel="stylesheet">
     <style>
+
+        :root {
+            --color-white: #FEFDF8;
+            --color-primary: #460F9E;
+            --color-primary-opacity: rgba(70, 15, 158, 0.25);
+            --color-secondary: #F2E9F9;
+            --color-info: #D2EFEF;
+        }
+
+        .unifrakturmaguntia-regular {
+            font-family: "UnifrakturMaguntia", cursive;
+            font-weight: 400;
+            font-style: normal;
+            letter-spacing: 4px;
+        }
+
+        body {
+            background-color: var(--color-white);
+            font-family: "Kanit", sans-serif;
+        }
+
+        .navbar {
+            background-color: var(--color-primary);
+        }
+
         .drop-area {
-            border: 2px dashed #007bff;
+            border: 2px dashed var(--color-primary);
             text-align: center;
             cursor: pointer;
+            background-color: var(--color-secondary);
         }
 
         .drop-area.hover {
-            border-color: #0056b3;
+            border-color: var(--color-secondary);
         }
+
+        .my-btn-primary {
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+        }
+
+        .my-btn-primary:hover {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .my-btn-outline-primary {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+            outline-color: var(--color-primary);
+            border-color: var(--color-secondary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .my-btn-outline-primary:hover {
+            background-color: var(--color-secondary);
+            color: var(--color-primary);
+        }
+
+        .howto {
+            background-color: var(--color-info);
+        }
+
+        .icon {
+            background-color: var(--color-primary-opacity);
+            color: var(--color-primary);
+            font-weight: bold;
+            outline-color: var(--color-primary);
+            outline-width: 2px;
+            border: 2px solid var(--color-primary);
+        }
+
+        .steps {
+            color: var(--color-primary);
+        }
+
+        footer {
+            background-color: var(--color-primary);
+        }
+
     </style>
 </head>
-<body class="bg-secondary-subtle">
-<div class="container-md bg-white min-vh-100 ">
-    <div class="row pt-5 pb-3">
+<body class="">
+<!--    navbar-->
+<nav class="navbar border-bottom border-1 navbar-expand-lg ">
+    <div class="container ">
+        <a class="navbar-brand text-white unifrakturmaguntia-regular" href="#">PACHELO</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+             aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">PACHELO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item ">
+                        <a class="nav-link active text-white" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link text-white" href="#">Link</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<!--    navbar end-->
+<div class="container-md">
+    <div class="row pb-3 pt-3">
         <div class="col text-center">
             <h1 class="fw-bold ">PACHELO SCAN</h1>
             <p>Scan your web server log now!</p>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-6">
-            <form action="/predict" method="post" enctype="multipart/form-data"
-                  class="d-flex justify-content-center flex-column ">
-                <div class="drop-area rounded-2 p-4 mb-2 bg-secondary-subtle" id="drop-area">
+    <div class="row pb-3 justify-content-center">
+        <div class="col-md-8 px-lg-5 px-md-0">
+            <form id="uploadForm" action="/predict" method="post" enctype="multipart/form-data"
+                  class="d-flex justify-content-center flex-column">
+                <div class="drop-area rounded-2 p-4 mb-2 " id="drop-area">
                     <i class="bi bi-file-earmark-text h1"></i>
-                    <p class="pt-3 ">Seret dan jatuhkan file di sini atau klik untuk memilih file <br>
+                    <p class="pt-3 text-secondary">Chose file<br>
                         Maximum file size 10MB
                     </p>
-                    <!--                    <label for="fileElem" class="btn btn-primary">Pilih File</label>-->
-                    <input type="file" name="file" id="fileElem" accept=".csv" style="display:none;">
+                    <input type="file" name="file" id="fileElem" accept=".log" style="display:none;" required>
                 </div>
-                <div class="d-flex row-cols-2 gap-2 px-5 justify-content-center">
-                    <button type="reset" class="btn btn-outline-secondary ms-2 ">Cancel</button>
-                    <button type="submit" class="btn btn-success ms-2">Prediksi</button>
+                <div class="d-flex justify-content-between gap-2">
+                    <button type="reset" class="btn my-btn-outline-primary w-50">Cancel</button>
+                    <button type="submit" class="btn my-btn-primary w-50">Scan</button>
                 </div>
             </form>
         </div>
     </div>
+    <div class="row text-center pt-5 mt-5">
+        <h2>How it Use Pachelo Scan?</h2>
+        <p>Scanning your web server logs for anomalies is simple and quick with Pachelo Scan.</p>
+    </div>
+    <div class="row d-flex flex-column justify-content-center align-items-center gap-3 howto py-5 mx-lg-5 rounded-2 mb-5 ">
+        <div class="col-md-8 ">
+            <div class="row d-flex justify-content-center ">
+                <div class="col-md-2 d-flex justify-content-center align-items-center text-center">
+                    <span class="icon rounded-2 w-100 h-100 align-content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" fill="currentColor"
+                         class="bi bi-upload" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                        <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+                    </svg>
+                    </span>
+                </div>
+                <div class="col-md-8">
+                    <strong class="steps">Steps 1</strong>
+                    <h4>Upload Log File</h4>
+                    <p>Upload your server log file in .log or .txt format. Make sure the file size does not exceed
+                        10MB.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 ">
+            <div class="row d-flex justify-content-center ">
+                <div class="col-md-2 d-flex justify-content-center align-items-center text-center">
+                    <span class="icon rounded-2 w-100 h-100 align-content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" fill="currentColor"
+                         class="bi bi-upc-scan" viewBox="0 0 16 16">
+  <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5M3 4.5a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0zm2 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 1 0v7a.5.5 0 0 1-1 0z"/>
+</svg>
+                    </span>
+                </div>
+                <div class="col-md-8">
+                    <strong class="steps">Steps 2</strong>
+                    <h4>Click the 'Scan' Button</h4>
+                    <p>After uploading the file, click the 'Scan' button to start the analysis. Wait a few seconds for
+                        the process to complete.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 ">
+            <div class="row d-flex justify-content-center ">
+                <div class="col-md-2 d-flex justify-content-center align-items-center text-center">
+                    <span class="icon rounded-2 w-100 h-100 align-content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" fill="currentColor"
+                         class="bi bi-table" viewBox="0 0 16 16">
+  <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"/>
+</svg>
+                    </span>
+                </div>
+                <div class="col-md-8">
+                    <strong class="steps">Steps 3</strong>
+                    <h4>View Analysis Results</h4>
+                    <p>When the process is complete, the analysis results will appear on the screen. You can view the IP
+                        and anomaly counter.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 ">
+            <div class="row d-flex justify-content-center ">
+                <div class="col-md-2 d-flex justify-content-center align-items-center text-center">
+                    <span class="icon rounded-2 w-100 h-100 align-content-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" fill="currentColor"
+                         class="bi bi-filetype-csv" viewBox="0 0 16 16">
+  <path fill-rule="evenodd"
+        d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5zM3.517 14.841a1.13 1.13 0 0 0 .401.823q.195.162.478.252.284.091.665.091.507 0 .859-.158.354-.158.539-.44.187-.284.187-.656 0-.336-.134-.56a1 1 0 0 0-.375-.357 2 2 0 0 0-.566-.21l-.621-.144a1 1 0 0 1-.404-.176.37.37 0 0 1-.144-.299q0-.234.185-.384.188-.152.512-.152.214 0 .37.068a.6.6 0 0 1 .246.181.56.56 0 0 1 .12.258h.75a1.1 1.1 0 0 0-.2-.566 1.2 1.2 0 0 0-.5-.41 1.8 1.8 0 0 0-.78-.152q-.439 0-.776.15-.337.149-.527.421-.19.273-.19.639 0 .302.122.524.124.223.352.367.228.143.539.213l.618.144q.31.073.463.193a.39.39 0 0 1 .152.326.5.5 0 0 1-.085.29.56.56 0 0 1-.255.193q-.167.07-.413.07-.175 0-.32-.04a.8.8 0 0 1-.248-.115.58.58 0 0 1-.255-.384zM.806 13.693q0-.373.102-.633a.87.87 0 0 1 .302-.399.8.8 0 0 1 .475-.137q.225 0 .398.097a.7.7 0 0 1 .272.26.85.85 0 0 1 .12.381h.765v-.072a1.33 1.33 0 0 0-.466-.964 1.4 1.4 0 0 0-.489-.272 1.8 1.8 0 0 0-.606-.097q-.534 0-.911.223-.375.222-.572.632-.195.41-.196.979v.498q0 .568.193.976.197.407.572.626.375.217.914.217.439 0 .785-.164t.55-.454a1.27 1.27 0 0 0 .226-.674v-.076h-.764a.8.8 0 0 1-.118.363.7.7 0 0 1-.272.25.9.9 0 0 1-.401.087.85.85 0 0 1-.478-.132.83.83 0 0 1-.299-.392 1.7 1.7 0 0 1-.102-.627zm8.239 2.238h-.953l-1.338-3.999h.917l.896 3.138h.038l.888-3.138h.879z"/>
+</svg>
+                    </span>
+                </div>
+                <div class="col-md-8">
+                    <strong class="steps">Steps 4</strong>
+                    <h4>Download Scan Report</h4>
+                    <p>For further documentation, you can download the analysis results in .csv format. Click the
+                        'Download CSV' button to save the report.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <footer class="row py-4 ">
+
+    </footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
@@ -54,15 +242,13 @@
 <script>
     const dropArea = document.getElementById('drop-area');
     const fileElem = document.getElementById('fileElem');
-    const form = document.querySelector('form');
+    const form = document.getElementById('uploadForm');
 
-    // Mencegah perilaku default
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
         document.body.addEventListener(eventName, preventDefaults, false);
     });
 
-    // Menambahkan dan menghapus kelas hover
     ['dragenter', 'dragover'].forEach(eventName => {
         dropArea.addEventListener(eventName, () => dropArea.classList.add('hover'), false);
     });
@@ -71,7 +257,6 @@
         dropArea.addEventListener(eventName, () => dropArea.classList.remove('hover'), false);
     });
 
-    // Menangani file yang dijatuhkan
     dropArea.addEventListener('drop', handleDrop, false);
     dropArea.addEventListener('click', () => fileElem.click());
 
@@ -93,17 +278,26 @@
 
     function handleFiles(files) {
         if (files.length > 0) {
-            // Menampilkan nama file yang dipilih
             const fileName = files[0].name;
-            dropArea.querySelector('p').textContent = `File yang dipilih: ${fileName}`;
+            dropArea.querySelector('p').textContent = `Selected file  : ${fileName}`;
         }
     }
 
-    // Reset file input dan area drop saat form di-reset
+    form.addEventListener('submit', (e) => {
+        const files = fileElem.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.size > 10 * 1024 * 1024) { // 10 MB
+                e.preventDefault();
+                alert('File harus berukuran tidak boleh lebih dari 10 MB.');
+            }
+        }
+    });
+
     form.addEventListener('reset', () => {
-        fileElem.value = '';  // Reset input file
-        dropArea.querySelector('p').innerHTML = "Seret dan jatuhkan file di sini atau klik untuk memilih file <br>\n" +
-            "                        Maximum file size 10MB"
+        fileElem.value = '';
+        dropArea.querySelector('p').innerHTML = "Chose file <br>\n" +
+            "                        Maximum file size 10MB";
     });
 </script>
 
