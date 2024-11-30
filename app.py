@@ -7,11 +7,14 @@ import os
 
 app = Flask(__name__)
 
+
 # Fungsi untuk parsing log
 def parse_apache_log_line(line):
-    log_pattern = re.compile(r'(?P<ip>\S+) (?P<dash1>\S+) (?P<user>\S+) \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+) (?P<url>\S+) (?P<protocol>\S+)" (?P<status>\d{3}) (?P<size>\d+) "(?P<referrer>[^\"]+)" "(?P<user_agent>[^\"]+)"')
+    log_pattern = re.compile(
+        r'(?P<ip>\S+) (?P<dash1>\S+) (?P<user>\S+) \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+) (?P<url>\S+) (?P<protocol>\S+)" (?P<status>\d{3}) (?P<size>\d+) "(?P<referrer>[^\"]+)" "(?P<user_agent>[^\"]+)"')
     match = log_pattern.match(line)
     return match.groupdict() if match else None
+
 
 def convert_log_to_csv(log_file):
     with open(log_file, 'r') as file:
@@ -21,7 +24,14 @@ def convert_log_to_csv(log_file):
     df = pd.DataFrame(log_data)
     csv_file = log_file.replace('.log', '.csv')
     df.to_csv(csv_file, index=False)
+    remove_file(log_file)
     return csv_file
+
+
+def remove_file(name_file):
+    if os.path.isfile(name_file):
+        os.remove(name_file)
+
 
 # Load model, encoder, and scaler
 model = load_model('ids.keras')
@@ -30,12 +40,20 @@ with open('label_encoders.pkl', 'rb') as f:
 with open('scaler.pkl', 'rb') as f:
     scaler = pickle.load(f)
 
+
 @app.route('/')
 def upload_file():
+    if request.args.get('up'):
+        remove_file(request.args.get('up'))
+        remove_file(request.args.get('res'))
     return render_template('upload.html')
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    os.makedirs('./uploads', exist_ok=True)
+    os.makedirs('./results', exist_ok=True)
+
     if 'file' not in request.files:
         return render_template('notfound.html')
     file = request.files['file']
@@ -43,7 +61,6 @@ def predict():
         return render_template('notfound.html')
 
     filepath = './uploads/' + file.filename
-    os.makedirs('./uploads', exist_ok=True)
     file.save(filepath)
 
     if file.filename.endswith('.log'):
@@ -52,7 +69,7 @@ def predict():
     new_data = pd.read_csv(filepath)
     features = ['status', 'user_agent']
     if not all(feature in new_data.columns for feature in features):
-        return "File tidak memiliki kolom yang diperlukan", 400
+        return render_template('notfound.html')
 
     X_new = new_data[features]
 
@@ -69,7 +86,7 @@ def predict():
     new_data['is_anomaly'] = predictions
 
     # Simpan hasil ke file baru
-    output_path = "hasiltest.csv"
+    output_path = "./results/hasilScan-" + file.filename.removesuffix('.log') + ".csv"
     new_data.to_csv(output_path, index=False)
 
     # Hitung jumlah anomali per IP
@@ -79,11 +96,14 @@ def predict():
     # Mengubah DataFrame menjadi list of dictionaries
     top_anomalies_list = top_anomalies.to_dict(orient='records')
 
-    return render_template('result.html', top_anomalies=top_anomalies_list, download_link=output_path)
+    return render_template('result.html', top_anomalies=top_anomalies_list, result=output_path,upload=filepath)
 
-@app.route('/download/<filename>')
-def download_file(filename):
+
+@app.route('/download')
+def download_file():
+    filename = request.args.get('filename')
     return send_from_directory(directory='.', path=filename, as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
