@@ -76,7 +76,10 @@ def predict():
     anomaly_counts = new_data[new_data['is_anomaly'] == 1].groupby('ip').size().sort_values(ascending=False).head(10)
     top_anomalies = anomaly_counts.reset_index(name='anomali_counter')
 
-    return render_template('result.html', top_anomalies=top_anomalies, download_link=output_path)
+    # Mengubah DataFrame menjadi list of dictionaries
+    top_anomalies_list = top_anomalies.to_dict(orient='records')
+
+    return render_template('result.html', top_anomalies=top_anomalies_list, download_link=output_path)
 
 @app.route('/download/<filename>')
 def download_file(filename):
