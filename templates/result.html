@@ -131,10 +131,11 @@
             </table>
         </div>
     </div>
+
     <div class="row d-flex justify-content-center align-items-center">
         <div class="d-flex row-cols-2 gap-2 px-5 justify-content-center col-6">
-            <a href="/" class="btn my-btn-outline-primary align-content-center">Scan Another File</a>
-            <a href="{{ url_for('download_file', filename=download_link) }}"
+            <a href="{{ url_for('upload_file',res=result,up=upload)}}" class="btn my-btn-outline-primary align-content-center">Scan Another File</a>
+            <a href="/download?filename={{ result }}"
                class="btn my-btn-primary align-content-center">Download</a>
         </div>
     </div>
