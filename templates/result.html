@@ -140,6 +140,25 @@
         </div>
     </div>
 
+    <h3>Top 5 IP Anomalies</h3>
+<table id="top5-table" class="table-responsive-md table-bordered table">
+    <thead class="table-light">
+        <tr class="text-center">
+            <th>IP Address</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in top_anomalies[:5] %} <!-- Hanya ambil 5 teratas -->
+        <tr>
+            <td class="ip-address">{{ row['ip'] }}</td>
+            <td class="location-details">Loading...</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
     <div class="row text-center pt-5 mt-5">
         <h2>How it Use Pachelo Scan?</h2>
         <p>Scanning your web server logs for anomalies is simple and quick with Pachelo Scan.</p>
@@ -231,5 +250,44 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+
+        <script>
+            // Fungsi untuk mengambil data lokasi dari API
+            async function fetchLocationDetails(ip) {
+                try {
+                    const response = await fetch(`http://ip-api.com/json/${ip}`);
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch data");
+                    }
+                    const data = await response.json();
+                    if (data.status === "success") {
+                        return `
+                            Country: ${data.country || "N/A"}<br>
+                            Region: ${data.regionName || "N/A"}<br>
+                            City: ${data.city || "N/A"}<br>
+                            ISP: ${data.isp || "N/A"}<br>
+                            AS Name: ${data.as || "N/A"}<br>
+                            lat long: ${data.lat || "N/A"} ${data.lon || "N/A"}<br>
+                        `;
+                    } else {
+                        return "Details not found";
+                    }
+                } catch (error) {
+                    console.error(error);
+                    return "Error fetching details";
+                }
+            }
+        
+            // Update tabel dengan detail lokasi
+            document.querySelectorAll("#top5-table .ip-address").forEach(async (cell) => {
+                const ip = cell.textContent.trim();
+                const detailsCell = cell.nextElementSibling; // Kolom Details
+        
+                // Ambil data dari API dan masukkan ke tabel
+                detailsCell.innerHTML = await fetchLocationDetails(ip);
+            });
+        </script>
+        
+
 </body>
 </html>
