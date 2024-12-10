@@ -124,10 +124,10 @@ def predict():
     if file.filename.endswith('.log'):
         filepath = convert_log_to_csv(filepath)
 
-    model = load_model('newModel.keras')
-    with open('newLabel.pkl', 'rb') as f:
+    model = load_model('newModelvv.keras')
+    with open('newLabelEncoders.pkl', 'rb') as f:
         label_encoders = pickle.load(f)
-    with open('newScaler.pkl', 'rb') as f:
+    with open('newScalervv.pkl', 'rb') as f:
         scaler = pickle.load(f)
 
     new_data = pd.read_csv(filepath)
@@ -141,17 +141,21 @@ def predict():
 
     # Terapkan Label Encoding dengan Incremental dan Unknown Handling
     for col in features:
-        if col in label_encoders and isinstance(label_encoders[col], LabelEncoder):
+        if col in label_encoders:  # Jika encoder untuk kolom ini sudah ada
             le = label_encoders[col]
-            # Handling untuk data baru yang tidak ada di classes_
-            X_new[col] = X_new[col].apply(
-                lambda x: le.transform([x])[0] if x in le.classes_ else -1
-            )
+            # Tambahkan label baru ke encoder
+            new_classes = set(X_new[col].unique()) - set(le.classes_)
+            if new_classes:
+                print(f"Menambahkan label baru untuk '{col}': {new_classes}")
+                le.classes_ = np.concatenate([le.classes_, np.array(list(new_classes), dtype=object)])  # Update classes_
+
+            # Transform data
+            X_new[col] = X_new[col].apply(lambda x: le.transform([x])[0] if x in le.classes_ else -1)
         else:
-            # Jika fitur baru atau label_encoder tidak valid, buat encoder baru
+            # Jika encoder baru, buat dan simpan
             le = LabelEncoder()
             X_new[col] = le.fit_transform(X_new[col].astype(str))
-            label_encoders[col] = le  # Simpan encoder baru
+            label_encoders[col] = le
 
     # Standarisasi data baru
     X_new_scaled = scaler.transform(X_new)
@@ -172,10 +176,10 @@ def predict():
     # Mengubah DataFrame menjadi list of dictionaries
     top_anomalies_list = top_anomalies.to_dict(orient='records')
 
-    model.save('newModel.keras')
-    with open('newLabel.pkl', 'wb') as f:
+    model.save('newModelvv.keras')
+    with open('newLabelEncoders.pkl', 'wb') as f:
         pickle.dump(label_encoders, f)
-    with open('newScaler.pkl', 'wb') as f:
+    with open('newScalervv.pkl', 'wb') as f:
         pickle.dump(scaler, f)
 
     return render_template('result.html', top_anomalies=top_anomalies_list, result=output_path, upload=filepath)
